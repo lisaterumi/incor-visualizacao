@@ -1,0 +1,102 @@
+<head>
+<link href="../static/bootstrap/css/bootstrap.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+ <link href="../static/css/flat-ui.css" rel="stylesheet">
+  <link href="../static/css/demo.css" rel="stylesheet">
+  <link href="../static/css/custom.css" rel="stylesheet">
+  <script type="text/javascript" src="../static/js/sonic.js"></script>
+  <script src="./data.js"></script>
+<style>
+.modal {
+    display:    none;
+    position:   fixed;
+    z-index:    1000;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 255, 255, 255, .8 ) 
+                url('http://i.stack.imgur.com/FhHRx.gif') 
+                50% 50% 
+                no-repeat;
+}
+
+/* enquanto estiver carregando, o scroll da página estará desativado */
+body.loading {
+    overflow: hidden;   
+}
+
+/* a partir do momento em que o body estiver com a classe loading,  o modal aparecerá */
+body.loading .modal {
+    display: block;
+}
+</style>
+</head>
+<body>
+  <br>
+  <h4 align="center"><a href="https://github.com/HAILab-PUCPR/entclinpt" target="_blank">ENTClinPT</a> - Extração de Entidades Clínicas em Português - versão XML</h4>
+  <div class="modal"></div>
+  <div>
+	  <div class="col-md-10">
+	  <h4>Anotação pelo sistema (usando BioBERTpt - disorders):</h4>
+	  <button type="button" onclick='mudarIndice(-1)'><< anterior</button>
+	  <button type="button" onclick='mudarIndice(1)'>>> Próximo</button>
+	  <br>
+      <br>
+	    <div id = "divNumero" placeholder="Texto"></div>
+		<div id = "retorno" placeholder="Entidades"></div>
+	  <h4>Legenda:</h4>
+		<div id = "divLegenda" placeholder="Legenda"> </div>
+	  </div>
+	</div>  
+	<br><br><br>
+</body>
+<script>
+indice = 0
+var dict = {};
+dict["Disorder"] = "#58D3F7"; // azul claro
+
+function colocaLegenda(){
+	// sao 13 grupos de entidades, cada um é uma cor
+	var textoDivLegenda = '<div class="entities" style="line-height: 2.5; direction: ltr" >';
+	for (var k=0;k<Object.keys(dict).length;k++)
+	{
+		var nomeCor = Object.keys(dict)[k];
+		var cor = dict[Object.keys(dict)[k]];
+		textoDivLegenda = textoDivLegenda+nomeCor + " " + "<span style='background: "+cor+"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br />";
+	}
+	textoDivLegenda =textoDivLegenda+"</div>";
+	//console.log(textoDivLegenda)
+	document.getElementById("divLegenda").innerHTML = textoDivLegenda;
+}
+
+
+function retornaTextoDiv(indice){
+
+	//alert(retorno2.length); // 48
+	//console.log(retorno2.length)
+	var textoDiv = '<div class="entities" style="line-height: 2.5; direction: ltr; background-color:#DCDCDC	">';
+    retorno = textos[indice];
+	texto = retorno.replaceAll("'","");
+	var cor ="#58D3F7";
+
+/*	textoDiv += texto.replaceAll("<Problema>",'<mark class="entity" style="background: '+cor+'; padding: 0.45em 0.6em; margin: 0 0.25em; line-height: 1; border-radius: 0.35em;">').replaceAll("</Problema>",'</mark>');*/
+	textoDiv += texto.replaceAll("<Disorder>",'<mark class="entity" style="background: '+cor+'; padding: 0.45em 0.6em; margin: 0 0.25em; line-height: 1; border-radius: 0.35em;">').replaceAll("</Disorder>",'</mark>');
+	console.log(textoDiv);
+
+	textoDiv = textoDiv+'</div>';
+	//console.log(textoDiv);
+	document.getElementById("retorno").innerHTML = textoDiv;
+	document.getElementById("divNumero").innerHTML = "Texto "+String(indice+1);
+}
+
+function mudarIndice(valor){
+	indice = indice+valor;
+    retornaTextoDiv(indice);
+}
+
+
+retornaTextoDiv(indice);
+colocaLegenda()
+
+</script>
